@@ -13,19 +13,25 @@ export default function Register() {
   })
 
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
 
   async function handleSubmit(e: any) {
     e.preventDefault()
     setLoading(true)
+    setMessage("")
 
     const { error } = await supabase
       .from("participants")
       .insert([form])
 
     if (error) {
-      alert("Error: " + error.message)
+      if (error.message.includes("duplicate")) {
+        setMessage("Email or Roll already registered.")
+      } else {
+        setMessage("Something went wrong. Try again.")
+      }
     } else {
-      alert("Registration successful!")
+      setMessage("Registration successful!")
       setForm({
         name: "",
         department: "",
@@ -125,6 +131,16 @@ export default function Register() {
         </button>
 
       </form>
+
+      {message && (
+        <p style={{
+          marginTop: "15px",
+          color: message.includes("successful") ? "green" : "red"
+        }}>
+          {message}
+        </p>
+      )}
+
     </div>
   )
 }
