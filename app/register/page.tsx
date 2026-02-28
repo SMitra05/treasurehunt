@@ -36,13 +36,23 @@ fontFamily: "Arial"
     />
     <br /><br />
 
-    <input
-      placeholder="Department (IT/CSE/ECE...)"
+    {/* Department Dropdown */}
+    <select
       required
       onChange={(e) =>
         setForm({ ...form, department: e.target.value })
       }
-    />
+    >
+      <option value="">Select Department</option>
+      <option value="IT">IT</option>
+      <option value="CSE">CSE</option>
+      <option value="ECE">ECE</option>
+      <option value="EE">EE</option>
+      <option value="AIML">AIML</option>
+      <option value="BCA">BCA</option>
+      <option value="MCA">MCA</option>
+      <option value="MTech">MTech</option>
+    </select>
     <br /><br />
 
     <input
@@ -63,13 +73,19 @@ fontFamily: "Arial"
     />
     <br /><br />
 
-    <input
-      placeholder="Year (1st/2nd/3rd/4th)"
+    {/* Year Dropdown */}
+    <select
       required
       onChange={(e) =>
         setForm({ ...form, year: e.target.value })
       }
-    />
+    >
+      <option value="">Select Year</option>
+      <option value="1st">1st Year</option>
+      <option value="2nd">2nd Year</option>
+      <option value="3rd">3rd Year</option>
+      <option value="4th">4th Year</option>
+    </select>
     <br /><br />
 
     <button
