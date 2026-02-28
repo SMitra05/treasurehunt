@@ -1,28 +1,66 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { supabase } from "../../lib/supabase"
 
 export default function GroupPage() {
 
   const [groupName, setGroupName] = useState("")
-  const [emails, setEmails] = useState("")
+  const [search, setSearch] = useState("")
+  const [suggestions, setSuggestions] = useState<any[]>([])
+  const [selectedMembers, setSelectedMembers] = useState<any[]>([])
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
+
+  // Fetch suggestions
+  useEffect(() => {
+    if (search.length < 2) {
+      setSuggestions([])
+      return
+    }
+
+    const fetchUsers = async () => {
+      const { data } = await supabase
+        .from("participants")
+        .select("id, email, name")
+        .ilike("email", `%${search}%`)
+        .limit(5)
+
+      setSuggestions(data || [])
+    }
+
+    fetchUsers()
+  }, [search])
+
+  function addMember(member: any) {
+    if (selectedMembers.length >= 4) {
+      setMessage("Maximum 4 members allowed.")
+      return
+    }
+
+    if (selectedMembers.find(m => m.email === member.email)) {
+      return
+    }
+
+    setSelectedMembers([...selectedMembers, member])
+    setSearch("")
+    setSuggestions([])
+  }
+
+  function removeMember(email: string) {
+    setSelectedMembers(selectedMembers.filter(m => m.email !== email))
+  }
 
   async function handleCreateGroup(e: any) {
     e.preventDefault()
     setLoading(true)
     setMessage("")
 
-    const emailList = emails.split(",").map(e => e.trim())
-
-    if (emailList.length < 2 || emailList.length > 4) {
-      setMessage("Group must have 2 to 4 members.")
+    if (selectedMembers.length < 2) {
+      setMessage("Minimum 2 members required.")
       setLoading(false)
       return
     }
 
-    // create group
     const { data: groupData, error: groupError } = await supabase
       .from("groups")
       .insert([{ name: groupName }])
@@ -36,21 +74,21 @@ export default function GroupPage() {
 
     const groupId = groupData[0].id
 
-    // update participants with group_id
-    const { error: updateError } = await supabase
+    const emails = selectedMembers.map(m => m.email)
+
+    const { error } = await supabase
       .from("participants")
       .update({ group_id: groupId })
-      .in("email", emailList)
+      .in("email", emails)
 
-    if (updateError) {
-      setMessage("Some members not found or already in group.")
-      setLoading(false)
-      return
+    if (error) {
+      setMessage("Failed to assign members.")
+    } else {
+      setMessage("Group created successfully!")
+      setGroupName("")
+      setSelectedMembers([])
     }
 
-    setMessage("Group created successfully!")
-    setGroupName("")
-    setEmails("")
     setLoading(false)
   }
 
@@ -59,6 +97,7 @@ export default function GroupPage() {
       <h2>Create Group</h2>
 
       <form onSubmit={handleCreateGroup}>
+
         <input
           placeholder="Group Name"
           required
@@ -67,19 +106,59 @@ export default function GroupPage() {
         />
         <br /><br />
 
-        <textarea
-          placeholder="Enter member emails (comma separated)"
-          required
-          value={emails}
-          onChange={(e) => setEmails(e.target.value)}
-          rows={4}
-          cols={40}
+        <input
+          placeholder="Search member by email"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-        <br /><br />
+
+        {/* Suggestions Dropdown */}
+        {suggestions.length > 0 && (
+          <div style={{
+            border: "1px solid #ccc",
+            width: "300px",
+            margin: "auto",
+            background: "white"
+          }}>
+            {suggestions.map((user) => (
+              <div
+                key={user.id}
+                style={{
+                  padding: "8px",
+                  cursor: "pointer"
+                }}
+                onClick={() => addMember(user)}
+              >
+                {user.email}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <br />
+
+        {/* Selected Members */}
+        <div>
+          {selectedMembers.map((member) => (
+            <div key={member.email}>
+              {member.email}
+              <button
+                type="button"
+                onClick={() => removeMember(member.email)}
+                style={{ marginLeft: "10px" }}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <br />
 
         <button type="submit" disabled={loading}>
           {loading ? "Creating..." : "Create Group"}
         </button>
+
       </form>
 
       {message && (
