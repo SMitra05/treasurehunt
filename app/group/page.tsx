@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { initializeApp } from "firebase/app"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
-import { getFirestore, doc, setDoc, updateDoc } from "firebase/firestore"
+import { getAuth, onAuthStateChanged } from "firebase/auth/browser"
+import { getFirestore, doc, setDoc, updateDoc } from "firebase/firestore/lite"
 import { v4 as uuidv4 } from "uuid"
 
 const firebaseConfig = {
