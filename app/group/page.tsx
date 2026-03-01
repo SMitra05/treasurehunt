@@ -1,10 +1,23 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { auth, db } from "../../lib/firebase"
-import { onAuthStateChanged } from "firebase/auth"
-import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore"
+import { initializeApp } from "firebase/app"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { getFirestore, doc, setDoc, updateDoc } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+}
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
 
 export default function GroupPage() {
 
@@ -40,15 +53,9 @@ export default function GroupPage() {
       return
     }
 
-    if (!groupName) {
-      alert("Enter group name")
-      return
-    }
+    const groupId = uuidv4()
 
     try {
-      const groupId = uuidv4()
-
-      // Create group document
       await setDoc(doc(db, "groups", groupId), {
         groupName,
         leaderId: user.uid,
@@ -56,7 +63,6 @@ export default function GroupPage() {
         createdAt: new Date()
       })
 
-      // Update leader participant record
       await updateDoc(doc(db, "participants", user.uid), {
         groupId: groupId
       })
@@ -85,9 +91,9 @@ export default function GroupPage() {
       <form onSubmit={handleCreateGroup}>
         <input
           placeholder="Group Name"
+          required
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
-          required
         />
         <br /><br />
 
@@ -103,9 +109,7 @@ export default function GroupPage() {
         <br /><br />
 
         {members.map((m, index) => (
-          <div key={index}>
-            {m}
-          </div>
+          <div key={index}>{m}</div>
         ))}
 
         <br />
