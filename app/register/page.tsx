@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { initializeApp } from "firebase/app"
-import { getAuth, sendSignInLinkToEmail } from "firebase/auth"
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth/browser"
+import { getFirestore, doc, setDoc } from "firebase/firestore/lite"
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
