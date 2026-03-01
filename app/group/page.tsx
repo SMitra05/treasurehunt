@@ -1,102 +1,81 @@
 "use client"
+
 import { useState, useEffect } from "react"
-import { auth, db } from "@/lib/firebase"
+import { auth, db } from "../../lib/firebase"
+import { onAuthStateChanged } from "firebase/auth"
+import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore"
+import { v4 as uuidv4 } from "uuid"
 
 export default function GroupPage() {
 
+  const [user, setUser] = useState<any>(null)
   const [groupName, setGroupName] = useState("")
-  const [search, setSearch] = useState("")
-  const [suggestions, setSuggestions] = useState<any[]>([])
-  const [selectedMembers, setSelectedMembers] = useState<any[]>([])
-  const [message, setMessage] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [members, setMembers] = useState<string[]>([])
+  const [emailInput, setEmailInput] = useState("")
 
-  // 🔎 Fetch suggestions from database
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+    })
+    return () => unsubscribe()
+  }, [])
 
-    if (search.length < 2) {
-      setSuggestions([])
+  async function handleAddMember() {
+    if (!emailInput) return
+
+    if (members.length >= 3) {
+      alert("Max 4 members allowed including leader")
       return
     }
 
-    const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from("participants")
-        .select("id, email, name")
-        .ilike("email", `%${search}%`)
-
-      console.log("Search:", search)
-      console.log("Data:", data)
-      console.log("Error:", error)
-
-      if (!error) {
-        setSuggestions(data || [])
-      }
-    }
-
-    fetchUsers()
-
-  }, [search])
-
-  function addMember(member: any) {
-    if (selectedMembers.length >= 4) {
-      setMessage("Maximum 4 members allowed.")
-      return
-    }
-
-    if (selectedMembers.find(m => m.email === member.email)) {
-      return
-    }
-
-    setSelectedMembers([...selectedMembers, member])
-    setSearch("")
-    setSuggestions([])
-  }
-
-  function removeMember(email: string) {
-    setSelectedMembers(selectedMembers.filter(m => m.email !== email))
+    setMembers([...members, emailInput])
+    setEmailInput("")
   }
 
   async function handleCreateGroup(e: any) {
     e.preventDefault()
-    setLoading(true)
-    setMessage("")
 
-    if (selectedMembers.length < 2) {
-      setMessage("Minimum 2 members required.")
-      setLoading(false)
+    if (!user) {
+      alert("Login required")
       return
     }
 
-    const { data: groupData, error: groupError } = await supabase
-      .from("groups")
-      .insert([{ name: groupName }])
-      .select()
-
-    if (groupError) {
-      setMessage("Group name already exists.")
-      setLoading(false)
+    if (!groupName) {
+      alert("Enter group name")
       return
     }
 
-    const groupId = groupData[0].id
+    try {
+      const groupId = uuidv4()
 
-    const emails = selectedMembers.map(m => m.email)
+      // Create group document
+      await setDoc(doc(db, "groups", groupId), {
+        groupName,
+        leaderId: user.uid,
+        members: [user.email, ...members],
+        createdAt: new Date()
+      })
 
-    const { error } = await supabase
-      .from("participants")
-      .update({ group_id: groupId })
-      .in("email", emails)
+      // Update leader participant record
+      await updateDoc(doc(db, "participants", user.uid), {
+        groupId: groupId
+      })
 
-    if (error) {
-      setMessage("Failed to assign members.")
-    } else {
-      setMessage("Group created successfully!")
+      alert("Group created successfully!")
       setGroupName("")
-      setSelectedMembers([])
-    }
+      setMembers([])
 
-    setLoading(false)
+    } catch (error: any) {
+      alert(error.message)
+    }
+  }
+
+  if (!user) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h2>Please login first</h2>
+      </div>
+    )
   }
 
   return (
@@ -104,79 +83,35 @@ export default function GroupPage() {
       <h2>Create Group</h2>
 
       <form onSubmit={handleCreateGroup}>
-
         <input
           placeholder="Group Name"
-          required
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
+          required
         />
         <br /><br />
 
         <input
-          placeholder="Search member by email"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Add member email"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
         />
-
-        {/* Suggestions */}
-        {suggestions.length > 0 && (
-          <div style={{
-            border: "1px solid #ccc",
-            width: "300px",
-            margin: "auto",
-            background: "white"
-          }}>
-            {suggestions.map((user) => (
-              <div
-                key={user.id}
-                style={{
-                  padding: "8px",
-                  cursor: "pointer"
-                }}
-                onClick={() => addMember(user)}
-              >
-                {user.email}
-              </div>
-            ))}
-          </div>
-        )}
-
-        <br />
-
-        {/* Selected Members */}
-        <div>
-          {selectedMembers.map((member) => (
-            <div key={member.email}>
-              {member.email}
-              <button
-                type="button"
-                onClick={() => removeMember(member.email)}
-                style={{ marginLeft: "10px" }}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <br />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Create Group"}
+        <button type="button" onClick={handleAddMember}>
+          Add
         </button>
 
+        <br /><br />
+
+        {members.map((m, index) => (
+          <div key={index}>
+            {m}
+          </div>
+        ))}
+
+        <br />
+
+        <button type="submit">Create Group</button>
       </form>
-
-      {message && (
-        <p style={{
-          marginTop: "15px",
-          color: message.includes("success") ? "green" : "red"
-        }}>
-          {message}
-        </p>
-      )}
-
     </div>
   )
 }
