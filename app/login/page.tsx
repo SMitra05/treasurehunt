@@ -6,19 +6,28 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
+  const [loading, setLoading] = useState(false)
 
   async function handleLogin(e: any) {
     e.preventDefault()
+    setLoading(true)
+    setMessage("")
 
     const { error } = await supabase.auth.signInWithOtp({
-      email
+      email,
+      options: {
+        emailRedirectTo: "https://treasurehunt-tectrix2026.vercel.app"
+      }
     })
 
     if (error) {
-      setMessage("Login failed.")
+      console.error(error)
+      setMessage(error.message)
     } else {
       setMessage("Check your email for login link.")
     }
+
+    setLoading(false)
   }
 
   return (
@@ -33,10 +42,12 @@ export default function LoginPage() {
           onChange={(e)=>setEmail(e.target.value)}
         />
         <br/><br/>
-        <button type="submit">Send Magic Link</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Sending..." : "Send Magic Link"}
+        </button>
       </form>
 
-      <p>{message}</p>
+      <p style={{ marginTop:"15px" }}>{message}</p>
     </div>
   )
 }
