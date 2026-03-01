@@ -1,35 +1,32 @@
 "use client"
 
 import { useState } from "react"
-import { auth, db } from "../../lib/firebase"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore"
+import { initializeApp } from "firebase/app"
+import { getAuth, sendSignInLinkToEmail } from "firebase/auth"
 
-export default function Register() {
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+}
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+
+export default function RegisterPage() {
+
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
-  const [department, setDepartment] = useState("")
-  const [roll, setRoll] = useState("")
-  const [year, setYear] = useState("")
 
-  async function handleSubmit(e: any) {
-    e.preventDefault()
-
+  async function handleLogin() {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-
-      await setDoc(doc(db, "participants", userCredential.user.uid), {
-        name,
-        department,
-        email,
-        roll,
-        year,
-        groupId: null,
-        createdAt: new Date()
+      await sendSignInLinkToEmail(auth, email, {
+        url: window.location.origin,
+        handleCodeInApp: true
       })
-
-      alert("Registration successful!")
+      alert("Magic link sent!")
     } catch (error: any) {
       alert(error.message)
     }
@@ -37,29 +34,18 @@ export default function Register() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Register</h2>
+      <h2>Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input placeholder="Name" required onChange={e => setName(e.target.value)} />
-        <br /><br />
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter email"
+      />
+      <br /><br />
 
-        <input placeholder="Email" required onChange={e => setEmail(e.target.value)} />
-        <br /><br />
-
-        <input type="password" placeholder="Password" required onChange={e => setPassword(e.target.value)} />
-        <br /><br />
-
-        <input placeholder="Department" required onChange={e => setDepartment(e.target.value)} />
-        <br /><br />
-
-        <input placeholder="Roll" required onChange={e => setRoll(e.target.value)} />
-        <br /><br />
-
-        <input placeholder="Year" required onChange={e => setYear(e.target.value)} />
-        <br /><br />
-
-        <button type="submit">Register</button>
-      </form>
+      <button onClick={handleLogin}>
+        Send Magic Link
+      </button>
     </div>
   )
 }
