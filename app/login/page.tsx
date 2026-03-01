@@ -1,53 +1,37 @@
 "use client"
+
 import { useState } from "react"
-import { auth, db } from "@/lib/firebase"
+import { auth, db } from "../../lib/firebase"
+import { signInWithEmailAndPassword } from "firebase/auth"
 
-export default function LoginPage() {
-
+export default function Login() {
   const [email, setEmail] = useState("")
-  const [message, setMessage] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [password, setPassword] = useState("")
 
   async function handleLogin(e: any) {
     e.preventDefault()
-    setLoading(true)
-    setMessage("")
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: "https://treasurehunt-tectrix2026.vercel.app"
-      }
-    })
-
-    if (error) {
-      console.error(error)
-      setMessage(error.message)
-    } else {
-      setMessage("Check your email for login link.")
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+      alert("Login successful!")
+    } catch (error: any) {
+      alert(error.message)
     }
-
-    setLoading(false)
   }
 
   return (
-    <div style={{ textAlign:"center", marginTop:"50px" }}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Login</h2>
 
       <form onSubmit={handleLogin}>
-        <input
-          placeholder="College Email"
-          required
-          value={email}
-          onChange={(e)=>setEmail(e.target.value)}
-        />
-        <br/><br/>
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send Magic Link"}
-        </button>
-      </form>
+        <input placeholder="Email" required onChange={e => setEmail(e.target.value)} />
+        <br /><br />
 
-      <p style={{ marginTop:"15px" }}>{message}</p>
+        <input type="password" placeholder="Password" required onChange={e => setPassword(e.target.value)} />
+        <br /><br />
+
+        <button type="submit">Login</button>
+      </form>
     </div>
   )
 }
