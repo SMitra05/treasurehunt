@@ -1,33 +1,72 @@
 "use client"
 
-import { useState } from "react"
-import { initializeApp } from "firebase/app"
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth/browser"
-import { getFirestore, doc, setDoc } from "firebase/firestore/lite"
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-}
-
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
+import { useState, useEffect } from "react"
 
 export default function RegisterPage() {
 
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [auth, setAuth] = useState<any>(null)
+  const [db, setDb] = useState<any>(null)
+  const [firebaseReady, setFirebaseReady] = useState(false)
 
-  async function handleLogin() {
+  useEffect(() => {
+    async function initFirebase() {
+
+      const { initializeApp } = await import("firebase/app")
+      const { getAuth } = await import("firebase/auth")
+      const { getFirestore } = await import("firebase/firestore")
+
+      const firebaseConfig = {
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+      }
+
+      const app = initializeApp(firebaseConfig)
+      const authInstance = getAuth(app)
+      const dbInstance = getFirestore(app)
+
+      setAuth(authInstance)
+      setDb(dbInstance)
+      setFirebaseReady(true)
+    }
+
+    initFirebase()
+  }, [])
+
+  async function handleRegister(e: any) {
+    e.preventDefault()
+
+    if (!firebaseReady || !auth || !db) {
+      alert("Firebase not ready")
+      return
+    }
+
+    const { createUserWithEmailAndPassword } = await import("firebase/auth")
+    const { doc, setDoc } = await import("firebase/firestore")
+
     try {
-      await sendSignInLinkToEmail(auth, email, {
-        url: window.location.origin,
-        handleCodeInApp: true
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+
+      const user = userCredential.user
+
+      await setDoc(doc(db, "participants", user.uid), {
+        name,
+        email,
+        createdAt: new Date(),
+        groupId: null
       })
-      alert("Magic link sent!")
+
+      alert("Registration successful!")
     } catch (error: any) {
       alert(error.message)
     }
@@ -35,18 +74,33 @@ export default function RegisterPage() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Login</h2>
+      <h2>Register</h2>
 
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter email"
-      />
-      <br /><br />
+      <form onSubmit={handleRegister}>
+        <input
+          placeholder="Full Name"
+          required
+          onChange={(e) => setName(e.target.value)}
+        />
+        <br /><br />
 
-      <button onClick={handleLogin}>
-        Send Magic Link
-      </button>
+        <input
+          placeholder="Email"
+          required
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <br /><br />
+
+        <input
+          type="password"
+          placeholder="Password"
+          required
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <br /><br />
+
+        <button type="submit">Register</button>
+      </form>
     </div>
   )
 }
