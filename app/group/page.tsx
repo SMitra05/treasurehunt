@@ -11,24 +11,31 @@ export default function GroupPage() {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
 
-  // Fetch suggestions
+  // 🔎 Fetch suggestions from database
   useEffect(() => {
+
     if (search.length < 2) {
       setSuggestions([])
       return
     }
 
     const fetchUsers = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("participants")
         .select("id, email, name")
         .ilike("email", `%${search}%`)
-        .limit(5)
 
-      setSuggestions(data || [])
+      console.log("Search:", search)
+      console.log("Data:", data)
+      console.log("Error:", error)
+
+      if (!error) {
+        setSuggestions(data || [])
+      }
     }
 
     fetchUsers()
+
   }, [search])
 
   function addMember(member: any) {
@@ -112,7 +119,7 @@ export default function GroupPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {/* Suggestions Dropdown */}
+        {/* Suggestions */}
         {suggestions.length > 0 && (
           <div style={{
             border: "1px solid #ccc",
@@ -169,6 +176,7 @@ export default function GroupPage() {
           {message}
         </p>
       )}
+
     </div>
   )
 }
