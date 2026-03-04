@@ -16,13 +16,15 @@ export default function RegisterPage(){
 
     const { error } = await supabase
       .from("participants")
-      .insert([{
-        name,
-        department,
-        email,
-        roll,
-        year
-      }])
+      .insert([
+        {
+          name,
+          department,
+          email,
+          roll,
+          year
+        }
+      ])
 
     if(error){
       alert(error.message)
@@ -46,11 +48,20 @@ export default function RegisterPage(){
 
         <br/><br/>
 
-        <input
-          placeholder="Department"
+        {/* Department Dropdown */}
+
+        <select
           required
           onChange={(e)=>setDepartment(e.target.value)}
-        />
+        >
+          <option value="">Select Department</option>
+          <option value="IT">IT</option>
+          <option value="CSE">CSE</option>
+          <option value="ECE">ECE</option>
+          <option value="EE">EE</option>
+          <option value="MCA">MCA</option>
+          <option value="BCA">BCA</option>
+        </select>
 
         <br/><br/>
 
@@ -70,11 +81,18 @@ export default function RegisterPage(){
 
         <br/><br/>
 
-        <input
-          placeholder="Year (1st/2nd/3rd/4th)"
+        {/* Year Dropdown */}
+
+        <select
           required
           onChange={(e)=>setYear(e.target.value)}
-        />
+        >
+          <option value="">Select Year</option>
+          <option value="1st">1st</option>
+          <option value="2nd">2nd</option>
+          <option value="3rd">3rd</option>
+          <option value="4th">4th</option>
+        </select>
 
         <br/><br/>
 
