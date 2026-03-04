@@ -7,9 +7,14 @@ export default function Login(){
 
   const [email,setEmail] = useState("")
   const [sent,setSent] = useState(false)
+  const [loading,setLoading] = useState(false)
+  const [error,setError] = useState("")
 
   async function handleLogin(e:any){
     e.preventDefault()
+
+    setLoading(true)
+    setError("")
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -18,7 +23,11 @@ export default function Login(){
       }
     })
 
-    if(!error){
+    setLoading(false)
+
+    if(error){
+      setError(error.message)
+    }else{
       setSent(true)
     }
   }
@@ -58,17 +67,24 @@ export default function Login(){
           Treasure Hunt Login
         </div>
 
+        {error && (
+          <p style={{color:"red",marginBottom:"10px"}}>
+            {error}
+          </p>
+        )}
+
         <form onSubmit={handleLogin}>
 
           <input
           type="email"
           placeholder="it2023xxx@rcciit.org.in"
           required
+          value={email}
           onChange={(e)=>setEmail(e.target.value)}
           />
 
-          <button type="submit">
-            Send Magic Link
+          <button type="submit" disabled={loading}>
+            {loading ? "Sending..." : "Send Magic Link"}
           </button>
 
         </form>
