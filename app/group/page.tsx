@@ -1,37 +1,76 @@
 "use client"
 
-import { useEffect,useState } from "react"
+import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function Group(){
 
-  const [team,setTeam] = useState("")
+  const router = useRouter()
+
+  const [teamId,setTeamId] = useState("")
+  const [members,setMembers] = useState<any[]>([])
+  const [image,setImage] = useState<File | null>(null)
 
   useEffect(()=>{
 
-    async function getTeam(){
+    async function loadTeam(){
 
       const { data:{ session } } = await supabase.auth.getSession()
 
-      if(!session) return
+      if(!session){
+        router.push("/login")
+        return
+      }
 
       const email = session.user.email
 
-      const { data } = await supabase
-        .from("participants")
-        .select("group_id")
-        .eq("email",email)
-        .single()
+      const { data:user } = await supabase
+      .from("participants")
+      .select("group_id")
+      .eq("email",email)
+      .single()
 
-      if(data){
-        setTeam(data.group_id)
+      if(user?.group_id){
+
+        setTeamId(user.group_id)
+
+        const { data:teamMembers } = await supabase
+        .from("participants")
+        .select("name,email")
+        .eq("group_id",user.group_id)
+
+        if(teamMembers){
+          setMembers(teamMembers)
+        }
+
       }
 
     }
 
-    getTeam()
+    loadTeam()
 
   },[])
+
+  async function logout(){
+
+    await supabase.auth.signOut()
+
+    router.push("/")
+  }
+
+  async function uploadImage(){
+
+    if(!image) return
+
+    const fileName = `${Date.now()}-${image.name}`
+
+    await supabase.storage
+    .from("team-uploads")
+    .upload(fileName,image)
+
+    alert("Image Uploaded Successfully")
+  }
 
   return(
     <div className="container">
@@ -42,23 +81,52 @@ export default function Group(){
           Team Dashboard
         </div>
 
-        {team ?
+        <p>
+          <strong>Team ID</strong>
+        </p>
 
-        <>
-          <p>Your Team ID</p>
+        <p>{teamId}</p>
 
-          <h3>{team}</h3>
+        <hr style={{margin:"20px 0"}}/>
 
-          <button>
-            Scan QR
-          </button>
-        </>
+        <h3>Team Members</h3>
 
-        :
+        <ul style={{listStyle:"none",padding:0}}>
 
-        <p>You are not in a team yet.</p>
+          {members.map((m,i)=>(
+            <li key={i}>
+              {m.name} ({m.email})
+            </li>
+          ))}
 
-        }
+        </ul>
+
+        <hr style={{margin:"20px 0"}}/>
+
+        <h3>Upload Image</h3>
+
+        <input
+        type="file"
+        onChange={(e)=>setImage(e.target.files?.[0] || null)}
+        />
+
+        <button onClick={uploadImage}>
+          Upload
+        </button>
+
+        <button style={{marginTop:"15px"}}>
+          Scan QR
+        </button>
+
+        <button
+        onClick={logout}
+        style={{
+          marginTop:"15px",
+          background:"#ff4444",
+          color:"white"
+        }}>
+          Logout
+        </button>
 
       </div>
 
