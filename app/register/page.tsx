@@ -69,61 +69,59 @@ export default function RegisterPage(){
   }
 
   if(success){
-  return(
-    <div style={{
-      display:"flex",
-      justifyContent:"center",
-      alignItems:"center",
-      height:"100vh",
-      background:"#f4f7f9"
-    }}>
-
+    return(
       <div style={{
-        background:"#ffffff",
-        padding:"50px",
-        borderRadius:"14px",
-        textAlign:"center",
-        boxShadow:"0 10px 30px rgba(0,0,0,0.1)",
-        width:"350px"
+        display:"flex",
+        justifyContent:"center",
+        alignItems:"center",
+        height:"100vh",
+        background:"#f4f7f9"
       }}>
 
         <div style={{
-          width:"90px",
-          height:"90px",
-          margin:"0 auto 20px auto",
-          borderRadius:"50%",
-          background:"#00c853",
-          display:"flex",
-          justifyContent:"center",
-          alignItems:"center",
-          fontSize:"50px",
-          color:"white",
-          animation:"pop 0.5s ease"
+          background:"#ffffff",
+          padding:"50px",
+          borderRadius:"14px",
+          textAlign:"center",
+          boxShadow:"0 10px 30px rgba(0,0,0,0.1)",
+          width:"350px"
         }}>
-          ✓
+
+          <div style={{
+            width:"90px",
+            height:"90px",
+            margin:"0 auto 20px auto",
+            borderRadius:"50%",
+            background:"#00c853",
+            display:"flex",
+            justifyContent:"center",
+            alignItems:"center",
+            fontSize:"50px",
+            color:"white",
+            animation:"pop 0.5s ease"
+          }}>
+            ✓
+          </div>
+
+          <h2 style={{color:"#00a152"}}>
+            Registration Successful
+          </h2>
+
+          <p>Redirecting to Login...</p>
+
         </div>
 
-        <h2 style={{color:"#00a152",marginBottom:"10px"}}>
-          Registration Successful
-        </h2>
-
-        <p style={{color:"#666"}}>
-          Redirecting to Login...
-        </p>
+        <style jsx>{`
+          @keyframes pop {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+          }
+        `}</style>
 
       </div>
-
-      <style jsx>{`
-        @keyframes pop {
-          0% { transform: scale(0); }
-          70% { transform: scale(1.2); }
-          100% { transform: scale(1); }
-        }
-      `}</style>
-
-    </div>
-  )
-}
+    )
+  }
 
   return(
     <div style={{textAlign:"center",marginTop:"50px"}}>
@@ -157,7 +155,8 @@ export default function RegisterPage(){
         <br/><br/>
 
         <input
-          placeholder="College Email"
+          type="email"
+          placeholder="example: it2023xxx@rcciit.org.in"
           required
           onChange={(e)=>setEmail(e.target.value)}
         />
@@ -165,7 +164,7 @@ export default function RegisterPage(){
         <br/><br/>
 
         <input
-          placeholder="College Roll"
+          placeholder="example: IT2023xxx"
           required
           onChange={(e)=>setRoll(e.target.value)}
         />
