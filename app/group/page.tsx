@@ -1,64 +1,66 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect,useState } from "react"
 import { supabase } from "../../lib/supabase"
-import { v4 as uuidv4 } from "uuid"
 
-export default function GroupPage(){
+export default function Group(){
 
-  const [groupName,setGroupName] = useState("")
-  const [members,setMembers] = useState("")
+  const [team,setTeam] = useState("")
 
-  async function handleCreateGroup(e:any){
-    e.preventDefault()
+  useEffect(()=>{
 
-    const groupId = uuidv4()
+    async function getTeam(){
 
-    const memberArray = members.split(",").map(m => m.trim())
+      const { data:{ session } } = await supabase.auth.getSession()
 
-    const { error } = await supabase
-      .from("groups")
-      .insert([{
-        id: groupId,
-        group_name: groupName,
-        members: memberArray
-      }])
+      if(!session) return
 
-    if(error){
-      alert(error.message)
-    }else{
-      alert("Group created successfully")
+      const email = session.user.email
+
+      const { data } = await supabase
+        .from("participants")
+        .select("group_id")
+        .eq("email",email)
+        .single()
+
+      if(data){
+        setTeam(data.group_id)
+      }
+
     }
-  }
+
+    getTeam()
+
+  },[])
 
   return(
-    <div style={{textAlign:"center",marginTop:"50px"}}>
+    <div className="container">
 
-      <h2>Create Group</h2>
+      <div className="card">
 
-      <form onSubmit={handleCreateGroup}>
+        <div className="title">
+          Team Dashboard
+        </div>
 
-        <input
-          placeholder="Group Name"
-          required
-          onChange={(e)=>setGroupName(e.target.value)}
-        />
+        {team ?
 
-        <br/><br/>
+        <>
+          <p>Your Team ID</p>
 
-        <input
-          placeholder="Member emails (comma separated)"
-          required
-          onChange={(e)=>setMembers(e.target.value)}
-        />
+          <h3>{team}</h3>
 
-        <br/><br/>
+          <button>
+            Scan QR
+          </button>
+        </>
 
-        <button type="submit">
-          Create Group
-        </button>
+        :
 
-      </form>
+        <p>You are not in a team yet.</p>
+
+        }
+
+      </div>
 
     </div>
   )
