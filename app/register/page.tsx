@@ -1,106 +1,89 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { supabase } from "../../lib/supabase"
 
-export default function RegisterPage() {
+export default function RegisterPage(){
 
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [auth, setAuth] = useState<any>(null)
-  const [db, setDb] = useState<any>(null)
-  const [firebaseReady, setFirebaseReady] = useState(false)
+  const [name,setName] = useState("")
+  const [department,setDepartment] = useState("")
+  const [email,setEmail] = useState("")
+  const [roll,setRoll] = useState("")
+  const [year,setYear] = useState("")
 
-  useEffect(() => {
-    async function initFirebase() {
-
-      const { initializeApp } = await import("firebase/app")
-      const { getAuth } = await import("firebase/auth")
-      const { getFirestore } = await import("firebase/firestore")
-
-      const firebaseConfig = {
-        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
-      }
-
-      const app = initializeApp(firebaseConfig)
-      const authInstance = getAuth(app)
-      const dbInstance = getFirestore(app)
-
-      setAuth(authInstance)
-      setDb(dbInstance)
-      setFirebaseReady(true)
-    }
-
-    initFirebase()
-  }, [])
-
-  async function handleRegister(e: any) {
+  async function handleRegister(e:any){
     e.preventDefault()
 
-    if (!firebaseReady || !auth || !db) {
-      alert("Firebase not ready")
-      return
-    }
-
-    const { createUserWithEmailAndPassword } = await import("firebase/auth")
-    const { doc, setDoc } = await import("firebase/firestore")
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
-
-      const user = userCredential.user
-
-      await setDoc(doc(db, "participants", user.uid), {
+    const { error } = await supabase
+      .from("participants")
+      .insert([{
         name,
+        department,
         email,
-        createdAt: new Date(),
-        groupId: null
-      })
+        roll,
+        year
+      }])
 
-      alert("Registration successful!")
-    } catch (error: any) {
+    if(error){
       alert(error.message)
+    }else{
+      alert("Registration successful")
     }
   }
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+  return(
+    <div style={{textAlign:"center",marginTop:"50px"}}>
+
       <h2>Register</h2>
 
       <form onSubmit={handleRegister}>
+
         <input
           placeholder="Full Name"
           required
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e)=>setName(e.target.value)}
         />
-        <br /><br />
+
+        <br/><br/>
 
         <input
-          placeholder="Email"
+          placeholder="Department"
           required
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e)=>setDepartment(e.target.value)}
         />
-        <br /><br />
+
+        <br/><br/>
 
         <input
-          type="password"
-          placeholder="Password"
+          placeholder="College Email"
           required
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e)=>setEmail(e.target.value)}
         />
-        <br /><br />
 
-        <button type="submit">Register</button>
+        <br/><br/>
+
+        <input
+          placeholder="College Roll"
+          required
+          onChange={(e)=>setRoll(e.target.value)}
+        />
+
+        <br/><br/>
+
+        <input
+          placeholder="Year (1st/2nd/3rd/4th)"
+          required
+          onChange={(e)=>setYear(e.target.value)}
+        />
+
+        <br/><br/>
+
+        <button type="submit">
+          Register
+        </button>
+
       </form>
+
     </div>
   )
 }
