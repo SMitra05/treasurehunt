@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { supabase } from "../../lib/supabase"
 
-export default function LoginPage(){
+export default function Login(){
 
   const [email,setEmail] = useState("")
   const [sent,setSent] = useState(false)
@@ -14,7 +14,7 @@ export default function LoginPage(){
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options:{
-        emailRedirectTo: "https://treasurehunt-tectrix2026.vercel.app/group"
+        emailRedirectTo:"https://treasurehunt-tectrix2026.vercel.app/group"
       }
     })
 
@@ -25,41 +25,15 @@ export default function LoginPage(){
 
   if(sent){
     return(
-      <div style={{
-        display:"flex",
-        justifyContent:"center",
-        alignItems:"center",
-        height:"100vh",
-        background:"#f4f7f9"
-      }}>
+      <div className="container">
 
-        <div style={{
-          background:"#ffffff",
-          padding:"50px",
-          borderRadius:"14px",
-          textAlign:"center",
-          boxShadow:"0 10px 30px rgba(0,0,0,0.1)",
-          width:"360px"
-        }}>
+        <div className="success-box">
 
-          <div style={{
-            width:"90px",
-            height:"90px",
-            margin:"0 auto 20px auto",
-            borderRadius:"50%",
-            background:"#00c853",
-            display:"flex",
-            justifyContent:"center",
-            alignItems:"center",
-            fontSize:"50px",
-            color:"white"
-          }}>
+          <div className="success-icon">
             ✓
           </div>
 
-          <h2 style={{color:"#00a152"}}>
-            Magic Link Sent
-          </h2>
+          <h2>Magic Link Sent</h2>
 
           <p>
             Check your email and click the login link.
@@ -72,26 +46,34 @@ export default function LoginPage(){
   }
 
   return(
-    <div style={{textAlign:"center",marginTop:"80px"}}>
+    <div className="container">
 
-      <h1>Login</h1>
+      <div className="card">
 
-      <form onSubmit={handleLogin}>
+        <div className="title">
+          TECTRIX 2026
+        </div>
 
-        <input
+        <div className="subtitle">
+          Treasure Hunt Login
+        </div>
+
+        <form onSubmit={handleLogin}>
+
+          <input
           type="email"
           placeholder="it2023xxx@rcciit.org.in"
           required
           onChange={(e)=>setEmail(e.target.value)}
-        />
+          />
 
-        <br/><br/>
+          <button type="submit">
+            Send Magic Link
+          </button>
 
-        <button type="submit">
-          Send Magic Link
-        </button>
+        </form>
 
-      </form>
+      </div>
 
     </div>
   )
