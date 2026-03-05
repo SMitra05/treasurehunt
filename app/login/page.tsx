@@ -15,12 +15,19 @@ export default function Login(){
   async function handleLogin(e:any){
     e.preventDefault()
 
-    const { data } = await supabase
+    setError("")
+
+    const { data, error } = await supabase
       .from("participants")
       .select("*")
-      .eq("email",email)
-      .eq("roll",roll)
-      .single()
+      .eq("email", email)
+      .eq("roll", roll.toUpperCase())
+      .maybeSingle()
+
+    if(error){
+      setError("Login error. Please try again.")
+      return
+    }
 
     if(!data){
       setError("Invalid Email or Roll Number")
@@ -51,16 +58,18 @@ export default function Login(){
         <form onSubmit={handleLogin}>
 
           <input
-          placeholder="IT2023xxx"
-          required
-          onChange={(e)=>setRoll(e.target.value)}
+            placeholder="IT2023xxx"
+            required
+            value={roll}
+            onChange={(e)=>setRoll(e.target.value)}
           />
 
           <input
-          type="email"
-          placeholder="it2023xxx@rcciit.org.in"
-          required
-          onChange={(e)=>setEmail(e.target.value)}
+            type="email"
+            placeholder="it2023xxx@rcciit.org.in"
+            required
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
           />
 
           <button type="submit">
