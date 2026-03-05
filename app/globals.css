@@ -125,11 +125,11 @@ background:#39ff14;
 
 border:none;
 
-padding:14px;
+padding:12px 26px;
 
 border-radius:8px;
 
-font-size:16px;
+font-size:15px;
 
 font-weight:bold;
 
@@ -137,11 +137,13 @@ cursor:pointer;
 
 transition:0.25s;
 
-width:100%;
+width:auto;
+
+min-width:140px;
 
 }
 
-/* BUTTON HOVER */
+/* button hover */
 
 button:hover{
 
@@ -151,7 +153,7 @@ transform:translateY(-2px);
 
 box-shadow:
 0 0 10px #39ff14,
-0 0 30px #39ff14;
+0 0 25px #39ff14;
 
 }
 
