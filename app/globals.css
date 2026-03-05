@@ -1,178 +1,127 @@
-/* Reset */
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-/* Main Body */
-
 body{
-  font-family:'Orbitron', sans-serif;
-  min-height:100vh;
-
-  background:
-  linear-gradient(rgba(0,0,0,0.85),rgba(0,0,0,0.9)),
-  url("/tectrix-bg.jpg");
-
-  background-size:cover;
-  background-position:center;
-
-  color:white;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
+margin:0;
+font-family:Orbitron, sans-serif;
+background:radial-gradient(circle,#1a1a1a,#000);
+color:white;
 }
-
-/* Main card container */
-
-.card{
-
-  width:360px;
-
-  background:rgba(255,255,255,0.05);
-
-  backdrop-filter:blur(12px);
-
-  border:1px solid #39ff14;
-
-  border-radius:12px;
-
-  padding:40px;
-
-  text-align:center;
-
-  box-shadow:0 0 20px rgba(57,255,20,0.3);
-}
-
-/* Titles */
-
-.title{
-  font-size:32px;
-  margin-bottom:10px;
-  color:#39ff14;
-}
-
-.subtitle{
-  font-size:14px;
-  margin-bottom:20px;
-  color:#ddd;
-}
-
-/* Inputs */
-
-input,select{
-
-  width:100%;
-
-  padding:12px;
-
-  margin:10px 0;
-
-  border-radius:6px;
-
-  border:1px solid #39ff14;
-
-  background:#020617;
-
-  color:white;
-
-  font-size:14px;
-
-}
-
-/* Placeholder */
-
-input::placeholder{
-  color:#aaa;
-}
-
-/* Buttons */
-
-button{
-
-  width:100%;
-
-  padding:12px;
-
-  margin-top:10px;
-
-  border:none;
-
-  border-radius:6px;
-
-  background:#39ff14;
-
-  color:black;
-
-  font-weight:bold;
-
-  cursor:pointer;
-
-  transition:all 0.3s ease;
-
-}
-
-/* Button hover glow */
-
-button:hover{
-
-  transform:scale(1.05);
-
-  box-shadow:0 0 15px #39ff14;
-
-}
-
-/* Success message */
-
-.success-box{
-
-  background:#0f2f0f;
-
-  border:1px solid #39ff14;
-
-  padding:30px;
-
-  border-radius:12px;
-
-  text-align:center;
-
-}
-
-.success-icon{
-
-  font-size:60px;
-
-  color:#39ff14;
-
-  margin-bottom:10px;
-
-}
-
-/* Error text */
-
-.error{
-
-  color:#ff4d4d;
-
-  font-size:14px;
-
-  margin-bottom:10px;
-
-}
-
-/* Center container */
 
 .container{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
 
-  display:flex;
+.card{
+background:#1c1c1c;
+padding:40px;
+border-radius:12px;
+border:2px solid #39ff14;
+width:360px;
+text-align:center;
+box-shadow:0 0 25px #39ff14;
+}
 
-  justify-content:center;
+.title{
+color:#39ff14;
+font-size:32px;
+margin-bottom:25px;
+}
 
-  align-items:center;
+.section{
+margin-bottom:25px;
+}
 
-  min-height:100vh;
+.section-title{
+font-size:18px;
+margin-bottom:10px;
+color:#ccc;
+}
 
+.team-id-box{
+background:#111;
+border:1px solid #39ff14;
+padding:12px;
+border-radius:8px;
+font-size:14px;
+word-break:break-all;
+}
+
+.members{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-top:10px;
+}
+
+.member-card{
+background:#111;
+padding:12px;
+border-radius:8px;
+border:1px solid #39ff14;
+text-align:left;
+}
+
+.member-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.member-name{
+font-weight:bold;
+color:white;
+font-size:16px;
+}
+
+.member-email{
+font-size:13px;
+color:#aaa;
+margin-top:4px;
+}
+
+.leader-badge{
+background:#39ff14;
+color:black;
+font-size:11px;
+padding:3px 8px;
+border-radius:6px;
+font-weight:bold;
+}
+
+.actions{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-top:20px;
+}
+
+.primary-btn{
+background:#39ff14;
+border:none;
+padding:12px;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.primary-btn:hover{
+background:#2ee10f;
+}
+
+.logout-btn{
+background:#ff4444;
+border:none;
+padding:12px;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+font-weight:bold;
+color:white;
+}
+
+.logout-btn:hover{
+background:#cc0000;
 }
