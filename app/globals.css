@@ -1,9 +1,20 @@
-body{
+/* RESET */
+
+*{
+box-sizing:border-box;
 margin:0;
-font-family:Orbitron, sans-serif;
-background:radial-gradient(circle,#1a1a1a,#000);
-color:white;
+padding:0;
 }
+
+body{
+font-family:Orbitron, sans-serif;
+background:radial-gradient(circle at top,#1a1a1a,#000);
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+/* CENTER CONTAINER */
 
 .container{
 display:flex;
@@ -13,24 +24,141 @@ min-height:100vh;
 padding:20px;
 }
 
+/* MAIN CARD */
+
 .card{
-background:#1c1c1c;
-padding:40px;
-border-radius:12px;
+
+background:rgba(25,25,25,0.95);
+padding:45px;
+
+border-radius:16px;
+
+width:380px;
+
 border:2px solid #39ff14;
-width:360px;
+
+box-shadow:
+0 0 15px #39ff14,
+0 0 40px rgba(57,255,20,0.5);
+
 text-align:center;
-box-shadow:0 0 25px #39ff14;
+
+transition:0.3s;
+
 }
+
+.card:hover{
+
+box-shadow:
+0 0 25px #39ff14,
+0 0 60px rgba(57,255,20,0.8);
+
+}
+
+/* TITLES */
 
 .title{
 color:#39ff14;
-font-size:32px;
-margin-bottom:25px;
+font-size:36px;
+letter-spacing:2px;
+margin-bottom:12px;
 }
 
+.subtitle{
+color:#bbb;
+font-size:16px;
+margin-bottom:28px;
+}
+
+/* FORM */
+
+form{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+/* INPUTS */
+
+input,select{
+
+background:#070707;
+
+border:1px solid #39ff14;
+
+color:white;
+
+padding:14px;
+
+border-radius:8px;
+
+font-size:14px;
+
+outline:none;
+
+transition:0.2s;
+
+width:100%;
+
+}
+
+input::placeholder{
+color:#777;
+}
+
+/* INPUT HOVER */
+
+input:focus,
+select:focus{
+
+border-color:#66ff33;
+
+box-shadow:0 0 10px #39ff14;
+
+}
+
+/* BUTTONS */
+
+button{
+
+background:#39ff14;
+
+border:none;
+
+padding:14px;
+
+border-radius:8px;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:0.25s;
+
+width:100%;
+
+}
+
+/* BUTTON HOVER */
+
+button:hover{
+
+background:#2ee10f;
+
+transform:translateY(-2px);
+
+box-shadow:
+0 0 10px #39ff14,
+0 0 30px #39ff14;
+
+}
+
+/* DASHBOARD SECTIONS */
+
 .section{
-margin-bottom:25px;
+margin-bottom:28px;
 }
 
 .section-title{
@@ -39,89 +167,157 @@ margin-bottom:10px;
 color:#ccc;
 }
 
+/* TEAM ID */
+
 .team-id-box{
-background:#111;
+
+background:#0b0b0b;
+
 border:1px solid #39ff14;
-padding:12px;
-border-radius:8px;
-font-size:14px;
+
+padding:14px;
+
+border-radius:10px;
+
+font-size:13px;
+
 word-break:break-all;
+
 }
+
+/* MEMBERS LIST */
 
 .members{
+
 display:flex;
 flex-direction:column;
-gap:12px;
-margin-top:10px;
+
+gap:14px;
+
+margin-top:14px;
+
 }
+
+/* MEMBER CARD */
 
 .member-card{
-background:#111;
-padding:12px;
-border-radius:8px;
+
+background:#0b0b0b;
+
+padding:14px;
+
+border-radius:10px;
+
 border:1px solid #39ff14;
+
 text-align:left;
+
+transition:0.2s;
+
 }
 
+.member-card:hover{
+
+box-shadow:0 0 12px #39ff14;
+
+}
+
+/* MEMBER HEADER */
+
 .member-header{
+
 display:flex;
+
 justify-content:space-between;
+
 align-items:center;
+
 }
 
 .member-name{
+
 font-weight:bold;
+
 color:white;
-font-size:16px;
+
+font-size:15px;
+
 }
 
 .member-email{
+
 font-size:13px;
-color:#aaa;
+
+color:#888;
+
 margin-top:4px;
+
 }
+
+/* LEADER BADGE */
 
 .leader-badge{
+
 background:#39ff14;
+
 color:black;
+
 font-size:11px;
-padding:3px 8px;
+
+padding:4px 8px;
+
 border-radius:6px;
+
 font-weight:bold;
+
 }
+
+/* ACTION BUTTONS */
 
 .actions{
+
 display:flex;
+
 flex-direction:column;
-gap:12px;
-margin-top:20px;
+
+gap:14px;
+
+margin-top:25px;
+
 }
 
-.primary-btn{
-background:#39ff14;
-border:none;
-padding:12px;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.primary-btn:hover{
-background:#2ee10f;
-}
+/* LOGOUT */
 
 .logout-btn{
+
 background:#ff4444;
-border:none;
-padding:12px;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-font-weight:bold;
+
 color:white;
+
 }
 
 .logout-btn:hover{
+
 background:#cc0000;
+
+box-shadow:0 0 12px #ff4444;
+
+}
+
+/* LINKS */
+
+a{
+
+color:#39ff14;
+
+text-decoration:none;
+
+font-size:14px;
+
+}
+
+a:hover{
+
+text-decoration:underline;
+
 }
