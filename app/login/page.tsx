@@ -2,56 +2,35 @@
 
 import { useState } from "react"
 import { supabase } from "../../lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function Login(){
 
+  const router = useRouter()
+
   const [email,setEmail] = useState("")
-  const [sent,setSent] = useState(false)
-  const [loading,setLoading] = useState(false)
+  const [roll,setRoll] = useState("")
   const [error,setError] = useState("")
 
   async function handleLogin(e:any){
     e.preventDefault()
 
-    setLoading(true)
-    setError("")
+    const { data } = await supabase
+      .from("participants")
+      .select("*")
+      .eq("email",email)
+      .eq("roll",roll)
+      .single()
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options:{
-        emailRedirectTo:"https://treasurehunt-tectrix2026.vercel.app/group"
-      }
-    })
-
-    setLoading(false)
-
-    if(error){
-      setError(error.message)
-    }else{
-      setSent(true)
+    if(!data){
+      setError("Invalid Email or Roll Number")
+      return
     }
-  }
 
-  if(sent){
-    return(
-      <div className="container">
+    // store session
+    localStorage.setItem("userEmail", email)
 
-        <div className="success-box">
-
-          <div className="success-icon">
-            ✓
-          </div>
-
-          <h2>Magic Link Sent</h2>
-
-          <p>
-            Check your email and click the login link.
-          </p>
-
-        </div>
-
-      </div>
-    )
+    router.push("/group")
   }
 
   return(
@@ -67,24 +46,25 @@ export default function Login(){
           Treasure Hunt Login
         </div>
 
-        {error && (
-          <p style={{color:"red",marginBottom:"10px"}}>
-            {error}
-          </p>
-        )}
+        {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleLogin}>
+
+          <input
+          placeholder="IT2023xxx"
+          required
+          onChange={(e)=>setRoll(e.target.value)}
+          />
 
           <input
           type="email"
           placeholder="it2023xxx@rcciit.org.in"
           required
-          value={email}
           onChange={(e)=>setEmail(e.target.value)}
           />
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Sending..." : "Send Magic Link"}
+          <button type="submit">
+            Login
           </button>
 
         </form>
