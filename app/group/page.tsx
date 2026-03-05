@@ -1,61 +1,105 @@
 "use client"
 
-import { useEffect,useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
+import { useRouter } from "next/navigation"
 
-export default function Group(){
+export default function GroupPage(){
 
 const router = useRouter()
 
-const [team,setTeam] = useState("")
+const [group,setGroup] = useState<any>(null)
 const [members,setMembers] = useState<any[]>([])
+const [user,setUser] = useState<any>(null)
 
 useEffect(()=>{
+loadData()
+},[])
 
-const email = localStorage.getItem("userEmail")
 
-if(!email){
+async function loadData(){
+
+const { data: { session } } = await supabase.auth.getSession()
+
+if(!session){
 router.push("/login")
 return
 }
 
-async function loadTeam(){
+setUser(session.user)
 
-const { data:user } = await supabase
+const { data: participant } = await supabase
 .from("participants")
-.select("group_id")
-.eq("email",email)
+.select("*")
+.eq("email",session.user.email)
 .single()
 
-if(user?.group_id){
+if(!participant?.group_id){
+router.push("/")
+return
+}
 
-setTeam(user.group_id)
+const { data: groupData } = await supabase
+.from("groups")
+.select("*")
+.eq("id",participant.group_id)
+.single()
 
-const { data } = await supabase
+setGroup(groupData)
+
+const { data: memberList } = await supabase
 .from("participants")
-.select("name,email")
-.eq("group_id",user.group_id)
+.select("*")
+.eq("group_id",participant.group_id)
 
-if(data){
-setMembers(data)
-}
+setMembers(memberList || [])
 
 }
 
+
+async function removeMember(id:string){
+
+if(group.team_locked){
+alert("Team is locked. Cannot remove members.")
+return
 }
 
-loadTeam()
+if(!confirm("Remove this member?")) return
 
-},[])
+await supabase
+.from("participants")
+.update({ group_id:null })
+.eq("id",id)
 
-function logout(){
+loadData()
 
-localStorage.removeItem("userEmail")
+}
+
+
+async function leaveTeam(){
+
+if(group.team_locked){
+alert("Team is locked. Cannot leave team.")
+return
+}
+
+await supabase
+.from("participants")
+.update({ group_id:null })
+.eq("id",user.id)
 
 router.push("/")
 
 }
+
+
+async function logout(){
+
+await supabase.auth.signOut()
+router.push("/")
+
+}
+
 
 return(
 
@@ -63,41 +107,49 @@ return(
 
 <div className="card">
 
-<h1 className="title">
-Team Dashboard
-</h1>
+<h1 className="title">Team Dashboard</h1>
+
+
+{/* TEAM ID */}
 
 <div className="section">
 
-<h3 className="section-title">
-Team ID
-</h3>
+<div className="section-title">Team ID</div>
 
 <div className="team-id-box">
-{team}
+{group?.id}
 </div>
 
 </div>
+
+
+{/* MEMBERS */}
 
 <div className="section">
 
-<h3 className="section-title">
-Team Members
-</h3>
+<div className="section-title">Team Members</div>
 
 <div className="members">
 
-{members.map((m,i)=>(
+{members.map(member =>(
 
-<div key={i} className="member-card">
+<div key={member.id} className="member-card">
 
 <div className="member-header">
 
-<span className="member-name">
-{m.name}
-</span>
+<div>
 
-{i===0 && (
+<div className="member-name">
+{member.name}
+</div>
+
+<div className="member-email">
+{member.email}
+</div>
+
+</div>
+
+{member.id === group.leader_id && (
 <span className="leader-badge">
 ⭐ Leader
 </span>
@@ -105,8 +157,29 @@ Team Members
 
 </div>
 
-<div className="member-email">
-{m.email}
+
+<div className="member-details">
+
+<p>Department: {member.department}</p>
+<p>Year: {member.year}</p>
+<p>Roll: {member.roll}</p>
+
+</div>
+
+
+<div className="member-actions">
+
+{user.id === group.leader_id && member.id !== group.leader_id && (
+
+<button
+className="danger-btn"
+onClick={()=>removeMember(member.id)}
+>
+Remove
+</button>
+
+)}
+
 </div>
 
 </div>
@@ -117,13 +190,23 @@ Team Members
 
 </div>
 
+
+{/* ACTION BUTTONS */}
+
 <div className="actions">
 
-<button className="primary-btn">
+<button>
 Scan QR
 </button>
 
-<button className="logout-btn" onClick={logout}>
+<button onClick={leaveTeam}>
+Leave Team
+</button>
+
+<button
+className="logout-btn"
+onClick={logout}
+>
 Logout
 </button>
 
