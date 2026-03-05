@@ -31,53 +31,102 @@ min-height:100vh;
 .card{
 background:#111;
 padding:40px;
-border-radius:14px;
+border-radius:16px;
 border:2px solid #39ff14;
-width:360px;
+width:380px;
 text-align:center;
-box-shadow:0 0 20px rgba(57,255,20,0.4);
+
+box-shadow:
+0 0 20px rgba(57,255,20,0.4),
+0 0 60px rgba(57,255,20,0.2);
 }
 
 /* TITLES */
 
 .title{
-font-size:36px;
+font-size:38px;
 color:#39ff14;
 margin-bottom:10px;
 }
 
 .subtitle{
 color:#aaa;
-margin-bottom:25px;
+margin-bottom:30px;
 }
 
-/* INPUT */
+/* FORM */
 
-input{
+form{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+/* INPUT + SELECT */
+
+input, select{
+
 width:100%;
-padding:12px;
-margin-bottom:15px;
-border-radius:8px;
+
+padding:14px;
+
+border-radius:10px;
+
 border:1px solid #39ff14;
+
 background:#0b0b0b;
+
 color:white;
+
 outline:none;
+
+font-size:14px;
+
+transition:0.2s;
+
+}
+
+input:focus,
+select:focus{
+
+box-shadow:0 0 10px #39ff14;
+
 }
 
 /* BUTTON */
 
 button{
+
 background:#39ff14;
+
 border:none;
-padding:12px 24px;
-border-radius:8px;
+
+padding:14px 26px;
+
+border-radius:10px;
+
 font-weight:bold;
+
+font-size:15px;
+
 cursor:pointer;
-transition:0.2s;
+
+transition:0.25s;
+
+align-self:center;
+
 }
 
 button:hover{
+
 background:#2ee10f;
+
+transform:translateY(-2px);
+
+box-shadow:
+0 0 12px #39ff14,
+0 0 25px #39ff14;
+
 }
 
 /* ERROR */
@@ -87,7 +136,7 @@ color:#ff4444;
 margin-bottom:10px;
 }
 
-/* DASHBOARD SECTIONS */
+/* DASHBOARD */
 
 .section{
 margin-bottom:30px;
@@ -99,8 +148,6 @@ color:#ccc;
 margin-bottom:12px;
 }
 
-/* TEAM ID */
-
 .team-id-box{
 background:#0b0b0b;
 border:1px solid #39ff14;
@@ -109,8 +156,6 @@ border-radius:10px;
 font-size:13px;
 word-break:break-all;
 }
-
-/* MEMBERS */
 
 .members{
 display:flex;
@@ -165,8 +210,6 @@ padding:4px 8px;
 font-size:11px;
 border-radius:6px;
 }
-
-/* ACTION BUTTONS */
 
 .actions{
 display:flex;
