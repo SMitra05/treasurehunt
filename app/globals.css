@@ -1,8 +1,93 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
 
+/* RESET */
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+/* BODY */
+
 body{
 font-family:'Orbitron', sans-serif;
+background:#0a0a0a;
+color:white;
+min-height:100vh;
 }
+
+/* CENTER CONTAINER */
+
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+/* CARD */
+
+.card{
+background:#111;
+padding:40px;
+border-radius:14px;
+border:2px solid #39ff14;
+width:360px;
+text-align:center;
+box-shadow:0 0 20px rgba(57,255,20,0.4);
+}
+
+/* TITLES */
+
+.title{
+font-size:36px;
+color:#39ff14;
+margin-bottom:10px;
+}
+
+.subtitle{
+color:#aaa;
+margin-bottom:25px;
+}
+
+/* INPUT */
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #39ff14;
+background:#0b0b0b;
+color:white;
+outline:none;
+}
+
+/* BUTTON */
+
+button{
+background:#39ff14;
+border:none;
+padding:12px 24px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+background:#2ee10f;
+}
+
+/* ERROR */
+
+.error{
+color:#ff4444;
+margin-bottom:10px;
+}
+
+/* DASHBOARD SECTIONS */
 
 .section{
 margin-bottom:30px;
@@ -14,6 +99,8 @@ color:#ccc;
 margin-bottom:12px;
 }
 
+/* TEAM ID */
+
 .team-id-box{
 background:#0b0b0b;
 border:1px solid #39ff14;
@@ -22,6 +109,8 @@ border-radius:10px;
 font-size:13px;
 word-break:break-all;
 }
+
+/* MEMBERS */
 
 .members{
 display:flex;
@@ -76,6 +165,8 @@ padding:4px 8px;
 font-size:11px;
 border-radius:6px;
 }
+
+/* ACTION BUTTONS */
 
 .actions{
 display:flex;
